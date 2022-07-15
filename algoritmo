@@ -1,0 +1,34 @@
+Passo 1) G = (V,E) Dividido em A e B
+
+alpha = menor custo
+para todo vértice, Yv = alpha/2
+
+Passo 2)
+H = G, mas apenas as arestas tais que a soma dos Y é igual ao custo da aresta
+
+Passo 3) Encontrar o emparelhamento perfeito desse grafo H
+	Caso encontre, esse é o emparelhamento perfeito do grafo G
+ 
+Passo 4) Caso não haja emparelhamento perfeito, existe um conjunto de vértices em A no grafo H que é maior que seu número de vizinhos em B
+
+Passo 5) Caso em G haja um subconjunto de A que é maior que seu número de vizinhos, não existe emparelhamento perfeito em G
+
+Passo 6)
+
+
+
+
+
+
+
+
+
+
+encontra um vértice v não emparelhado em A e visita esse vértice
+
+encontra seu primeiro vizinho em B, visita esse vértice de B e adiciona ele na fila para visitar depois
+executa mesmo procedimento com os outros vizinhos de v, visitando eles e inserindo na fila
+
+após visitar todos os vizinhos de v, visita os vizinhos do primeiro da fila que ainda não foram visitados, os adicionando na fila (considerando todos os vizinhos se pertence a A e apenas emparelhados se pertence a B) e remove da fila
+pare quando a fila estiver vazia
+
