@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri Jul 15 09:52:03 2022
+# Make data base, printed on Fri Jul 15 21:11:29 2022
 
 # Variables
 
@@ -95,7 +95,7 @@ MAKEFILE_LIST := Makefile
 # environment
 ZSH = /home/gabrielmmf/.oh-my-zsh
 # environment
-VSCODE_PID = 123846
+VSCODE_PID = 1069510
 # environment
 XDG_SESSION_TYPE = x11
 # automatic
@@ -148,8 +148,6 @@ MAIN = Main
 INVOCATION_ID = 1f73acbc553f4b3c870eb9adbebdb897
 # environment
 USERNAME = gabrielmmf
-# environment
-NOTIFY_SOCKET = /run/user/1000/systemd/notify
 # automatic
 ?F = $(notdir $?)
 # environment
@@ -189,7 +187,7 @@ MAKE_VERSION := 4.3
 # environment
 MANAGERPID = 6410
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 123846
+GIO_LAUNCHED_DESKTOP_FILE_PID = 1069510
 # environment
 PAGER = less
 # environment
@@ -212,8 +210,6 @@ QT_IM_MODULE = ibus
 ELECTRON_RUN_AS_NODE = 1
 # environment
 VSCODE_IPC_HOOK = /run/user/1000/vscode-e7323ea7-1.69.1-main.sock
-# environment
-GSETTINGS_SCHEMA_DIR = /home/gabrielmmf/data
 # default
 .RECIPEPREFIX := 
 # automatic
@@ -235,7 +231,7 @@ XDG_MENU_PREFIX = gnome-
 # environment
 GDMSESSION = ubuntu-xorg
 # variable set hash-table stats:
-# Load=111/1024=11%, Rehash=0, Collisions=6/148=4%
+# Load=109/1024=11%, Rehash=0, Collisions=6/146=4%
 
 # Pattern-specific Variable Values
 
@@ -244,10 +240,10 @@ GDMSESSION = ubuntu-xorg
 # Directories
 
 # src (device 66311, inode 1854797): 3 files, no impossibilities.
-# . (device 66311, inode 1704072): 49 files, no impossibilities.
+# . (device 66311, inode 1704072): 47 files, no impossibilities.
 # ./src (device 66311, inode 1854797): 3 files, no impossibilities.
 
-# 55 files, no impossibilities in 3 directories.
+# 53 files, no impossibilities in 3 directories.
 
 # Implicit Rules
 
@@ -284,9 +280,9 @@ all:
 #  Implicit rule search has been done.
 #  File does not exist.
 #  File has not been updated.
- 
 
 build: obj/tp2.o
+ 
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
@@ -307,12 +303,12 @@ obj/tp2.o:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 61 / storage = 602 B / avg = 9 B
-# current buf: size = 8162 B / used = 602 B / count = 61 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 59 / storage = 564 B / avg = 9 B
+# current buf: size = 8162 B / used = 564 B / count = 59 / avg = 9 B
 
-# strcache performance: lookups = 70 / hit rate = 12%
+# strcache performance: lookups = 68 / hit rate = 13%
 # hash-table stats:
-# Load=61/8192=1%, Rehash=0, Collisions=0/70=0%
-# Finished Make data base on Fri Jul 15 09:52:03 2022
+# Load=59/8192=1%, Rehash=0, Collisions=0/68=0%
+# Finished Make data base on Fri Jul 15 21:11:29 2022
 
  
