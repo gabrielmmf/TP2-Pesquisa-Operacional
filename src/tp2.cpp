@@ -1,9 +1,16 @@
+/*
+NOME: GABRIEL MARTINS MEDEIROS FIALHO
+MATRÍCULA: 2020006540
+
+ESCOLHIDA PRIMEIRA OPÇÃO: IMPLEMENTAR DIRETAMENTE UM ALGORITMO QUE ENCONTRA EMPARELHAMENTOS PERFEITOS EM GRAFOS BIPARTIDOS
+*/
+
 #include <iostream>
 #include <list>
 #include <vector>
 #include <set>
 
-#define EPS 0.0000001
+#define EPS 0.000001
 
 using namespace std;
 
@@ -53,26 +60,37 @@ int saoVizinhos(bool **matriz, int n, int m, int u, int v)
     return aresta;
 }
 
-bool testaEmparelhamento(bool **matriz, int n, int m, vector<int> &caminho, vector<int> &folhas)
+bool testaEmparelhamento(bool **matriz, int n, int m, bool *emparelhamento_M, bool *emparelhado, bool *isinS, bool *nhS)
 {
+    // Criando vetores para saber se um vértice está em S ou nos vizinhos de S em H
+    vector<int> caminho;
     caminho.clear();
-    folhas.clear();
-    bool *emparelhamento_M = new bool[m];
-    bool *emparelhado = new bool[2 * n];
+    for (int i = 0; i < 2 * n; i++)
+    {
+        isinS[i] = false;
+        nhS[i] = false;
+    }
     int *antecessor = new int[2 * n];
     bool *visitado = new bool[2 * n];
     int v = -1;
-    bool e_folha = true;
+    int folha = -1;
+    bool e_folha = false;
+    bool folha_em_b = false;
     list<int> fila;
-
     /* EMPARELHAMENTO M VAZIO */
     for (int i = 0; i < m; i++)
     {
         emparelhamento_M[i] = 0;
     }
+
+    // Resetando tudo
     for (int i = 0; i < 2 * n; i++)
     {
         emparelhado[i] = 0;
+        antecessor[i] = 0;
+        visitado[i] = 0;
+        isinS[i] = 0;
+        nhS[i] = 0;
     }
 
     /* Percorrendo cada vértice de A */
@@ -106,72 +124,52 @@ bool testaEmparelhamento(bool **matriz, int n, int m, vector<int> &caminho, vect
     /* Agora você já tem um M maior, e assuma então que tem vértice
     v não emparelhado em A mas todos os seus vizinhos em B estão
     emparelhados por M com outros vértices de A. */
-    e_folha = false;
-    /* VERIFICA SE HÁ VÉRTICE v EM A AINDA NÃO EMPARELHADO */
-    int contador = 0;
+
     while (true)
     {
-        /* LEMBRAR DE VERIFICAR NOVAMENTE OS EMPARELHAMENTOS */
-        cout << "Matriz H: " << endl;
-        imprimeMatriz(matriz, n, m);
-        imprimeEmparelhamento(emparelhamento_M, emparelhado, n, m);
+        // Limpando emparelhamentos
+        for (int i = 0; i < 2 * n; i++)
+        {
+            emparelhado[i] = 0;
+        }
+
+        // Verificando emparelhamentos novamente
+        for (int i = 0; i < m; i++)
+        {
+            if (emparelhamento_M[i])
+            {
+                for (int j = 0; j < 2 * n; j++)
+                {
+                    if (matriz[j][i])
+                        emparelhado[j] = true;
+                }
+            }
+        }
+
+        /* VERIFICA SE HÁ VÉRTICE v EM A AINDA NÃO EMPARELHADO */
         v = -1;
         for (int i = 0; i < n; i++)
         {
             if (!emparelhado[i])
             {
                 v = i;
-                cout << "Vértice " << v << " não emparelhado" << endl;
                 break;
             }
         }
+        // Se todos os vértices estão emparelhedos, o emparelhamento é perfeito
         if (v == -1)
         {
             return true;
         }
 
-        /* VISITA v */
+        /* EXECUTAR BFS A PARTIR DE v CASO ESTEJA DESEMPARELHADO */
         antecessor[v] = -1;
-        visitado[v] = 1;
-
-        // cout << "Adicionando " << v << " ao caminho" << endl;
-        // caminho.push_back(v);
-
-        /* EXECUTAR BFS A PARTIR DE v */
-        e_folha = true;
-        for (int i = 0; i < m; i++)
-        {
-            /* ENCONTRA VIZINHO EM B */
-            if (matriz[v][i] == 1)
-            {
-                e_folha = false;
-
-                for (int j = n; j < 2 * n; j++)
-                {
-                    /* ENCONTRA VÉRTICE j VIZINHO DE v */
-                    if (matriz[j][i] == 1)
-                    {
-                        /* INSERE j NA FILA */
-                        // cout << "Inserindo Vértice " << j << " na fila" << endl;
-                        antecessor[j] = v;
-                        visitado[j] = 1;
-                        // cout << "Adicionando " << j << " na fila" << endl;
-                        fila.push_back(j);
-                    }
-                }
-            }
-        }
-
-        if (e_folha)
-        {
-            // cout << "Adicionando " << v << " às folhas" << endl;
-            folhas.push_back(v);
-        }
-
+        visitado[v] = true;
+        fila.push_back(v);
+        folha_em_b = false;
         while (fila.size() > 0)
         {
             int v_atual = fila.front();
-
             e_folha = true;
             for (int i = 0; i < m; i++)
             {
@@ -184,7 +182,7 @@ bool testaEmparelhamento(bool **matriz, int n, int m, vector<int> &caminho, vect
                         {
                             e_folha = false;
                             antecessor[j] = v_atual;
-                            visitado[j] = 1;
+                            visitado[j] = true;
                             fila.push_back(j);
                         }
                     }
@@ -198,110 +196,75 @@ bool testaEmparelhamento(bool **matriz, int n, int m, vector<int> &caminho, vect
                         {
                             e_folha = false;
                             antecessor[j] = v_atual;
-                            visitado[j] = 1;
+                            visitado[j] = true;
                             fila.push_back(j);
                         }
                     }
                 }
             }
-            if (e_folha)
+            // ARMAZENA FOLHA CASO ELA ESTEJA EM B
+            if (e_folha and v_atual >= n)
             {
-                // cout << "Folha " << v_atual << " encontrada, inserindo nas folhas" << endl;
-                folhas.push_back(v_atual);
+                folha_em_b = true;
+                folha = v_atual;
             }
             fila.pop_front();
         }
-
-        for (int i = 0; i < (int)folhas.size(); i++)
-        {
-            int j = folhas[i];
-            while (j != -1)
-            {
-                caminho.push_back(j);
-                j = antecessor[j];
-            }
-        }
-        // cout << "Fim da BFS" << endl;
-
-        cout << "Caminho encontrado: " << endl;
-        for (auto const &i : caminho)
-        {
-            cout << i << " ";
-        }
-        cout << endl;
-
-        cout << "Folhas: " << endl;
-        for (auto const &i : folhas)
-        {
-            cout << i << " ";
-        }
-        cout << endl;
-
-        int folha_em_b = -1;
-
         /* VERIFICANDO SE ALGUMA FOLHA ESTÁ EM B */
-        for (int i = 0; i < (int)folhas.size(); i++)
+        if (folha_em_b == false) // RETORNAR FALSO CASO TODAS AS FOLHAS ESTEJAM EM A
         {
-            if (folhas[i] >= n)
+            for (int i = 0; i < 2 * n; i++)
             {
-                folha_em_b = (int)folhas[i];
+                if (i < n)
+                {
+                    isinS[i] = visitado[i];
+                }
+                else
+                {
+                    nhS[i] = visitado[i];
+                }
             }
-        }
-        /* SE NÃO HÁ FOLHA EM B */
-        if (folha_em_b == -1)
-        {
-            cout << "Todas folhas em A, retornando falso." << endl;
             return false;
         }
-        cout << "Alguma folha está em B, calculando caminho" << endl;
-        cout << "Caminho encontrado: " << endl;
-        caminho.clear();
-        int j = folha_em_b;
-        while (j != -1)
-        {
-            caminho.push_back(j);
-            j = antecessor[j];
-        }
-        for (auto const &i : caminho)
-        {
-            cout << i << " ";
-        }
-        cout << endl;
 
-        cout << "Folhas: " << endl;
-        for (auto const &i : folhas)
+        /* CRIANDO CAMINHO */
+        int i = folha;
+        while (i != -1)
         {
-            cout << i << " ";
+            caminho.push_back(i);
+            i = antecessor[i];
         }
+
         /* Daı́ você inverte as arestas de M que estão em P com as que não
         estão. O resultado será um emparelhamento maior (por que?). Daı́
         você repete, etc. */
-        cout << "Executando inversão das arestas" << endl;
-        for (int i = 0; i < (int)caminho.size() - 1; i++)
+
+        /* EXECUTANDO INVERSÃO DAS ARESTAS */
+
+        bool esta_emparelhada = false;
+        for (int i = caminho.size() - 1; i > 0; i--)
         {
             for (int j = 0; j < m; j++)
             {
-                if (emparelhamento_M[j])
+                if (matriz[caminho[i]][j] and matriz[caminho[i - 1]][j])
                 {
-                    if (matriz[caminho[i]][j] and matriz[caminho[i + 1]][j])
+                    esta_emparelhada = false;
+                    if (emparelhamento_M[j])
                     {
                         emparelhamento_M[j] = false;
-                        for (int k = 0; k < 2 * n; k++)
-                        {
-                            matriz[k][j] = 0;
-                        }
+                        esta_emparelhada = true;
+                        break;
                     }
-                }
-                else if (matriz[caminho[i]][j] and matriz[caminho[i + 1]][j]){
-                    emparelhamento_M[j] = true;
+                    if (!esta_emparelhada)
+                    {
+                        emparelhamento_M[j] = true;
+                    }
                 }
             }
         }
-        cout << endl;
         /* FIM DA BFS */
-        contador++;
     }
-    return false;
+    return true;
 }
 
 int main()
@@ -311,12 +274,13 @@ int main()
     cin >> n;
     cin >> m;
 
+    bool *emparelhamento_M = new bool[m];
+    bool *emparelhado = new bool[2 * n];
     bool **matriz_N = new bool *[2 * n];
     bool **matriz_H = new bool *[2 * n];
     bool *isinS = new bool[2 * n];
     bool *nhS = new bool[2 * n];
     vector<int> caminho;
-    vector<int> folhas;
     set<int> set_S;
     set<int> vizinhos_S_G;
     double *custos = new double[m];
@@ -374,21 +338,10 @@ int main()
         array_y[i] = (double)custo_min / 2.0;
     }
 
-    int contador = 0;
-
     while (true)
     {
-        cout << "y: " << endl;
-        for (int i = 0; i < 2 * n; i++)
-        {
-            cout << array_y[i] << " ";
-        }
-        cout << endl
-             << "Iteração " << contador << endl;
-
-        cout << "Matriz N: " << endl;
-        imprimeMatriz(matriz_N, n, m);
-
+        /* Seja H um grafo com os mesmos vértices de G, e cujas arestas são aquelas uv ∈ E(G)
+        tais que y u + y v = cuv . */
         for (int i = 0; i < m; i++)
         {
             soma_y = 0;
@@ -399,7 +352,7 @@ int main()
                     soma_y = soma_y + array_y[j];
                 }
             }
-            if (abs(custos[i] - soma_y) < EPS)
+            if (abs(custos[i] - soma_y) <= EPS)
             {
                 for (int j = 0; j < 2 * n; j++)
                 {
@@ -407,49 +360,22 @@ int main()
                 }
             }
         }
-
-        cout << "Custos: " << endl;
-        for (int i = 0; i < m; i++)
-        {
-            cout << custos[i] << " ";
-        }
-        cout << endl;
-
         /*
-        TESTANDO SE HÁ EMPARELHAMENTO PERFEITO
+        TESTANDO SE HÁ EMPARELHAMENTO PERFEITO NO GRAFO H
         */
-        cout << "Inicio do teste de emparelhamento perfeito" << endl;
-        if (!testaEmparelhamento(matriz_H, n, m, caminho, folhas))
+        if (!testaEmparelhamento(matriz_H, n, m, emparelhamento_M, emparelhado, isinS, nhS))
         {
             set_S.clear();
             vizinhos_S_G.clear();
-            for (auto const &i : caminho)
+            for (int i = 0; i < n; i++)
             {
-                if (i < n)
+                if (isinS[i])
                 {
-                    // cout << "Adicionando " << i << " Ao subset S " << endl;
                     set_S.insert(i);
                 }
             }
-            // Criando vetores para saber se um vértice está em S ou nos vizinhos de S em H
-            for (int i = 0; i < 2 * n; i++)
-            {
-                isinS[i] = false;
-                nhS[i] = false;
-            }
 
-            for (auto const &i : caminho)
-            {
-                if (i < n)
-                {
-                    isinS[i] = true;
-                }
-                else
-                {
-                    nhS[i] = true;
-                }
-            }
-            /* Encontrando vizinhos do subset S em G  */
+            /* Encontrando vizinhos do subset S no grafo G  */
             set<int>::iterator it;
             for (it = set_S.begin(); it != set_S.end(); it++)
             {
@@ -461,7 +387,6 @@ int main()
                         {
                             if (matriz_N[j][i])
                             {
-                                // cout << "Vértice " << *it << " tem vizinho em G " << j << endl;
                                 vizinhos_S_G.insert(j);
                             }
                         }
@@ -469,27 +394,21 @@ int main()
                 }
             }
 
-            cout << "Conjunto S: ";
-
-            for (it = set_S.begin(); it != set_S.end(); it++)
-            {
-                cout << *it << " ";
-            }
-
-            cout << endl;
-
-            /*
-
-            cout << "Vizinhos de S em G: ";
-
-            for (it = vizinhos_S_G.begin(); it != vizinhos_S_G.end(); it++)
-            {
-                cout << *it << " ";
-            }
-            cout << endl;*/
+            /* Se |NG (S)| < |S|, PARE. Neste caso, não existe qualquer emparelhamento perfeito em
+            G (por que?!) */
             if (vizinhos_S_G.size() < set_S.size())
             {
-                cout << "Não há emparelhamento perfeito" << endl;
+                cout << -1 << endl;
+                for (int i = 0; i < n; i++)
+                {
+                    cout << isinS[i] << " ";
+                }
+                cout << endl;
+                for (int i = n; i < 2 * n; i++)
+                {
+                    cout << nhS[i] << " ";
+                }
+                cout << endl;
                 return 0;
             }
 
@@ -498,20 +417,19 @@ int main()
             mas garantindo que y permaneça viável em G.
             */
 
-            double epsilon = 10000000000;
+            double epsilon = 1.7976931348623157E+308;
             int k = 0;
-            double lado_dir = 0;
+            double minimiza_eps = 0;
 
             for (int i = 0; i < m; i++)
             {
                 k = 0;
-                lado_dir = custos[i];
+                minimiza_eps = custos[i];
                 for (int j = 0; j < 2 * n; j++)
                 {
-
                     if (matriz_N[j][i])
                     {
-                        lado_dir -= array_y[j];
+                        minimiza_eps -= array_y[j];
                         if (isinS[j])
                             k++;
                         if (nhS[j])
@@ -520,11 +438,11 @@ int main()
                 }
                 if (k > 0)
                 {
-                    if (lado_dir < epsilon)
-                        epsilon = lado_dir;
+                    if (minimiza_eps < epsilon)
+                        epsilon = minimiza_eps;
                 }
             }
-            cout << "Eps: " << epsilon << endl;
+
             for (int i = 0; i < 2 * n; i++)
             {
                 if (isinS[i])
@@ -536,12 +454,37 @@ int main()
                     array_y[i] -= epsilon;
                 }
             }
+            for (int i = 0; i < 2 * n; i++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    matriz_H[i][j] = 0;
+                }
+            }
         }
+        // POSSUI EMPARELHAMENTO PERFEITO:
         else
         {
-            cout << "O emparelhamento é perfeito" << endl;
+            int soma = 0;
+            for (int i = 0; i < m; i++)
+            {
+                if (emparelhamento_M[i])
+                    soma += custos[i];
+            }
+            cout << soma << endl;
+
+            for (int i = 0; i < m; i++)
+            {
+                cout << emparelhamento_M[i] << " ";
+            }
+            cout << endl;
+
+            for (int i = 0; i < 2 * n; i++)
+            {
+                cout << array_y[i] << " ";
+            }
+            cout << endl;
             return 0;
         }
-        contador++;
     }
 }
